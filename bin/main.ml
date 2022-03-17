@@ -1,6 +1,6 @@
 let image_states = ref (Lib.Img.fetch_images "/data/pentagon/test/gt2")
-let list_states image_states = Lib.Page_img_state.show image_states
-let html_to_string html = Format.asprintf "%a" (Tyxml.Html.pp ()) html
+(* let list_states image_states = Lib.Page_img_state.show image_states *)
+(* let html_to_string html = Format.asprintf "%a" (Tyxml.Html.pp ()) html *)
 
 let update_handler req _image_state =
   match%lwt Dream.form req with
@@ -18,7 +18,8 @@ let () =
   @@ Dream.router
        [
          ( Dream.get "/" @@ fun _ ->
-           Dream.html (html_to_string (list_states !image_states)) );
+           (* Dream.html (html_to_string (list_states !image_states)) ); *)
+           Lib.Page.index !image_states |> Dream.html);
          ( Dream.get "/img/:id" @@ fun req ->
            let id = Dream.param req "id" in
            let img = Lib.Img.from_id (int_of_string id) !image_states in

@@ -11,7 +11,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script src="/static/tailwind.js"></script>
-        <script src="/static/client.js"></script>
+        <script src="/static/image.js"></script>
       </head>
       <body class="bg-gray-800 text-white">
         <div class="container mx-auto p-4">
