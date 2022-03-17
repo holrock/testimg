@@ -1,0 +1,9 @@
+(library
+ (name lib)
+ (libraries tyxml dream)
+ (preprocess (pps lwt_ppx ppx_yojson_conv)))
+
+(rule
+  (targets page_img.ml)
+  (deps page_img.eml.ml)
+  (action (run dream_eml %{deps} --workspace %{workspace_root})))

@@ -1,0 +1,5 @@
+(executable
+ (public_name filterimg)
+ (name main)
+ (libraries lib dream tyxml)
+ (preprocess (pps lwt_ppx)))
