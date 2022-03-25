@@ -1,4 +1,4 @@
-  let index request img username : string =
+  let index request (id, filename) username : string =
     <!DOCTYPE html>
     <html lang="ja">
       <head>
@@ -10,16 +10,11 @@
       <body class="bg-gray-800 text-white">
         <div class="container mx-auto p-4">
           <h1 class="text-xl font-bold">
-            <%s Img.filename img %>
+            <%s filename %>
           </h1>
-          <div class="flex">
-            judgement:
-              <%s Img.judgement_to_string img %>
-            </p>
-          </div>
           <div class="flex flex-row p-2">
             <div class="mr-4">
-              <img src="/images/<%s Img.filename img %>" alt="img" width="600" />
+              <img src="/images/<%s filename %>" alt="img" width="600" />
             </div>
             <form method="POST" action="/update">
               <input type="hidden" name="user" value="<%s username %>">
@@ -42,9 +37,9 @@
                 >
                   Invalid (K)
                 </button>
-                <input type="hidden" name="id" value="<%s Img.id img |> string_of_int %>" />
+                <input type="hidden" name="id" value="<%s id |> string_of_int %>" />
+                <input type="hidden" name="filename" value="<%s filename %>" />
                 <div class="mt-auto">
-%                 let id = Img.id img in
 %                 if id > 0 then begin
                     <a href="/img/<%i id - 1 %>" class="underline text-blue-300 hover:text-blue-400 visited:text-purple-300">back</a>
 %                 end;

@@ -1,6 +1,6 @@
 let id_to_link id = "img/" ^ string_of_int id
 
-let index request image_states username =
+let index request judges username =
   <html>
     <head>
       <meta charset="utf-8" />
@@ -34,15 +34,15 @@ let index request image_states username =
               </tr>
             </thead>
             <tbody>
-%             image_states |> List.iteri begin fun idx i ->
+%             judges |> List.iter begin fun (id, filename, judge) ->
                 <tr class="hover:bg-gray-600">
-                  <td class="p-2 border-b border-gray-400"><%d idx + 1 %></td>
+                  <td class="p-2 border-b border-gray-400"><%d id %></td>
                   <td class="p-2 border-b border-gray-500">
-                    <a href="<%s Img.id i |> id_to_link  %>" class="underline text-blue-400 hover:text-blue-200 visited:text-purple-400">
-                      <%s Img.filename i %>
+                    <a href="<%s id_to_link id %>" class="underline text-blue-400 hover:text-blue-200 visited:text-purple-400">
+                      <%s filename %>
                     </a>
                   </td>
-                  <td class="p-2 border-b border-gray-500"><%s Img.judgement_to_string i %></td>
+                  <td class="p-2 border-b border-gray-500"><%s match judge with | Some 1 -> "Valid" | Some 0 -> "Invalid" | _ -> "Not yet" %></td>
                 </tr>
 %            end;
             </tbody>

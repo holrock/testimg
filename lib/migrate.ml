@@ -26,7 +26,7 @@ module Q = struct
 	      id integer primary key autoincrement,
 	      user text not null,
 	      filename text not null,
-	      judge text not null
+	      judge integer not null
       )
     |eos}
 
