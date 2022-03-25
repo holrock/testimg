@@ -1,10 +1,4 @@
-(* open Tyxml.Html *)
-
-(* let index id =
-  let t = "Image" ^ id in
-  Page_base.page t (body [ h1 [ txt t ] ]) *)
-
-  let index img request : string =
+  let index request img username : string =
     <!DOCTYPE html>
     <html lang="ja">
       <head>
@@ -19,9 +13,6 @@
             <%s Img.filename img %>
           </h1>
           <div class="flex">
-            <p>prediction:
-              <%s Img.predict_to_string img %>
-            <br>
             judgement:
               <%s Img.judgement_to_string img %>
             </p>
@@ -31,6 +22,7 @@
               <img src="/images/<%s Img.filename img %>" alt="img" width="600" />
             </div>
             <form method="POST" action="/update">
+              <input type="hidden" name="user" value="<%s username %>">
               <div class="flex flex-col h-full justify-between">
                 <%s! Dream.csrf_tag request %>
                 <button
@@ -39,7 +31,7 @@
                   value="valid"
                   class="bg-blue-500 hover:bg-blue-700 text-white text-xl font-bold py-4 px-4 rounded mb-4"
                 >
-                  Valid
+                  Valid (J)  
                 </button>
                 <button
                   id="invalid"
@@ -48,11 +40,15 @@
                   value="invalid"
                   class="bg-red-500 hover:bg-red-700 text-white text-xl font-bold py-4 px-4 rounded"
                 >
-                  Invalid
+                  Invalid (K)
                 </button>
                 <input type="hidden" name="id" value="<%s Img.id img |> string_of_int %>" />
                 <div class="mt-auto">
-                  <a href="/" class="underline text-blue-300 hover:text-blue-400 visited:text-purple-300">back</a>
+%                 let id = Img.id img in
+%                 if id > 0 then begin
+                    <a href="/img/<%i id - 1 %>" class="underline text-blue-300 hover:text-blue-400 visited:text-purple-300">back</a>
+%                 end;
+                  <a href="/" class="underline text-blue-300 hover:text-blue-400 visited:text-purple-300">index</a>
                 </div>
               </div>
             </form>

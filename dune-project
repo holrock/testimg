@@ -23,7 +23,7 @@
    ocaml
    dune
    dream
-   tyxml
+   caqti-driver-sqlite3
    ppx_yojson_conv
    js_of_ocaml
    js_of_ocaml-ppx

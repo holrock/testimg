@@ -12,8 +12,9 @@ function keyup(ev) {
 	if (!t) return
 	t.classList.add(anime)
 	setTimeout(() => {
+		t.classList.remove(anime)
 		t.click()
-	}, 500)
+	}, 150)
 }
 
 function init() {

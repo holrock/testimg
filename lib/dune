@@ -1,6 +1,6 @@
 (library
  (name lib)
- (libraries dream)
+ (libraries dream caqti-driver-sqlite3)
  (preprocess (pps lwt_ppx ppx_yojson_conv)))
 
 (rule
