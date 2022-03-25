@@ -35,7 +35,7 @@ let set_username req =
 
 let () =
   Dream.run ~interface:"0.0.0.0"
-  @@ Dream.set_secret "hogehoge"
+  @@ Dream.set_secret (Sys.getenv "DREAM_SECRET")
   @@ Dream.sql_pool "sqlite3:db.sqlite"
   @@ Dream.logger @@ Dream.memory_sessions @@ Dream.flash
   @@ Dream.router
