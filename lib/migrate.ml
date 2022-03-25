@@ -58,10 +58,13 @@ let run files db =
   create_files_index db >>=? fun () ->
   create_judgements db >>=? fun () ->
   create_judgements_index db >>=? fun () ->
-  Lwt_list.fold_left_s
-    (fun m f ->
-      match m with Ok _ -> insert_file f db | Error _ as e -> Lwt.return e)
-    (Ok ()) files
+    let module Db = (val db: DB) in
+    Db.with_transaction (fun () ->
+      Lwt_list.fold_left_s
+        (fun m f ->
+          match m with Ok _ -> insert_file f db | Error _ as e -> Lwt.return e)
+        (Ok ()) files
+    )
 
 let report_error = function
   | Ok () -> Lwt.return_unit
