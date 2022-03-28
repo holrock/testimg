@@ -77,6 +77,7 @@ let img_handler req =
     Dream.html (Lib.Page_img.index req file username next_id last_id)
 
 let () =
+  let img_path = (Sys.getenv "TEST_IMG_PATH") in
   Dream.run ~interface:"0.0.0.0"
   @@ Dream.set_secret (Sys.getenv "DREAM_SECRET")
   @@ Dream.sql_pool "sqlite3:db/db.sqlite"
@@ -87,7 +88,7 @@ let () =
          Dream.get "/img/:id" @@ img_handler;
          Dream.post "/update" @@ update_handler;
          Dream.post "/username" @@ set_username;
-         Dream.get "/images/**" @@ Dream.static "/data/pentagon/test/gt2/";
+         Dream.get "/images/**" @@ Dream.static img_path;
          Dream.get "/static/**" @@ Dream.static "static/";
          Dream.get "/favicon.ico" @@ Dream.static "static/";
        ]
