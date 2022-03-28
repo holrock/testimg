@@ -1,3 +1,21 @@
+  (*
+
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) 2022 holrock
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, version 3 of the License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  *)
+
 let next_last_id req id =
   let%lwt min_id, max_id = Dream.sql req Lib.Db.min_max_file_id in
   let next_id = if id >= max_id then min_id else id + 1 in
