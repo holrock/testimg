@@ -1,4 +1,10 @@
-  let index request (id, filename) username : string =
+  let h1_class judge =
+    match judge with
+    | None -> "bg-lime-600"
+    | Some true -> "bg-blue-600"
+    | Some false -> "bg-red-600"
+
+  let index request (id, filename, judge) username next_id last_id : string =
     <!DOCTYPE html>
     <html lang="ja">
       <head>
@@ -9,7 +15,7 @@
       </head>
       <body class="bg-gray-800 text-white">
         <div class="container mx-auto p-4">
-          <h1 class="text-xl font-bold">
+          <h1 class="p-1 text-2xl font-bold <%s h1_class judge %>">
             <%s filename %>
           </h1>
           <div class="flex flex-row p-2">
@@ -39,10 +45,11 @@
                 </button>
                 <input type="hidden" name="id" value="<%s id |> string_of_int %>" />
                 <input type="hidden" name="filename" value="<%s filename %>" />
-                <div class="mt-auto">
-%                 if id > 0 then begin
-                    <a href="/img/<%i id - 1 %>" class="underline text-blue-300 hover:text-blue-400 visited:text-purple-300">back</a>
-%                 end;
+                <div class="mt-auto mb-4">
+                  <a href="/img/<%i last_id %>" class="underline text-blue-300 hover:text-blue-400 visited:text-purple-300">back</a>
+                  <a href="/img/<%i next_id %>" class="ml-2 underline text-blue-300 hover:text-blue-400 visited:text-purple-300">next</a>
+                </div>
+                <div>
                   <a href="/" class="underline text-blue-300 hover:text-blue-400 visited:text-purple-300">index</a>
                 </div>
               </div>

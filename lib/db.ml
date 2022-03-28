@@ -30,8 +30,9 @@ let list_judges =
 
 let find_file =
   let query =
-    (T.int -->? T.(tup2 int string))
-    @:- "select id, filename from files where id = ?"
+    (T.int -->? T.(tup3 int string (option bool)))
+    @:- "select f.id, f.filename, j.judge from files f left join judgements j \
+         on f.filename = j.filename where f.id = ?"
   in
   fun id (module Db : DB) ->
     let%lwt file_or_error = Db.find_opt query id in

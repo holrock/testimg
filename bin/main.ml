@@ -1,3 +1,10 @@
+let next_last_id req id =
+  let%lwt min_id, max_id = Dream.sql req Lib.Db.min_max_file_id in
+  let next_id = if id >= max_id then min_id else id + 1 in
+  let last_id = if id <= min_id then max_id else id - 1 in
+  Lwt.return (next_id, last_id)
+
+
 let update_handler req =
   match%lwt Dream.form req with
   | `Ok [ ("filename", filename); ("id", id); ("judge", judge); ("user", user) ]
@@ -5,8 +12,7 @@ let update_handler req =
       let id = int_of_string id in
       let judge = if String.equal judge "valid" then true else false in
       let%lwt judgded = Dream.sql req (Lib.Db.select_judge user filename) in
-      let%lwt min_id, max_id = Dream.sql req Lib.Db.min_max_file_id in
-      let next_id = if id >= max_id then min_id else id + 1 in
+      let%lwt next_id, _last_id = next_last_id req id in
       if Option.is_none judgded then
         let%lwt () = Dream.sql req (Lib.Db.insert_judge user filename judge) in
         Dream.redirect req ("/img/" ^ string_of_int next_id)
@@ -50,7 +56,9 @@ let img_handler req =
   let%lwt file = Dream.sql req (Lib.Db.find_file (int_of_string id)) in
   match file with
   | None -> Dream.redirect req "/"
-  | Some file -> Dream.html (Lib.Page_img.index req file username)
+  | Some file ->
+    let%lwt next_id, last_id = next_last_id req (int_of_string id ) in
+    Dream.html (Lib.Page_img.index req file username next_id last_id)
 
 let () =
   Dream.run ~interface:"0.0.0.0"
