@@ -7,7 +7,7 @@ let collect_jpgs path =
 
 let main files =
   Lwt_io.printf "%s\n" "initialize database..." >>= fun () ->
-  Lib.Migrate.migrate "sqlite3:db.sqlite" files
+  Lib.Migrate.migrate "sqlite3:./db/db.sqlite" files
 
 let () =
   match Array.to_list Sys.argv with

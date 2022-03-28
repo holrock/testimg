@@ -1,10 +1,6 @@
-let image_states = ref (Lib.Img.fetch_images "/data/pentagon/test/gt2")
-(* let list_states image_states = Lib.Page_img_state.show image_states *)
-(* let html_to_string html = Format.asprintf "%a" (Tyxml.Html.pp ()) html *)
-
 let update_handler req =
   match%lwt Dream.form req with
-  | `Ok [ ("filename", filename); ("id", id); ("judge", judge); ("user", user); ]
+  | `Ok [ ("filename", filename); ("id", id); ("judge", judge); ("user", user) ]
     ->
       let id = int_of_string id in
       let judge = if String.equal judge "valid" then true else false in
@@ -18,7 +14,7 @@ let update_handler req =
         let%lwt () = Dream.sql req (Lib.Db.update_judge user filename judge) in
         Dream.redirect req ("/img/" ^ string_of_int next_id)
   | `Ok sl ->
-    List.iter (fun (k,v) ->  Dream.log "%s,%s" k v) sl;
+      List.iter (fun (k, v) -> Dream.log "%s,%s" k v) sl;
       Dream.redirect req "/"
   | _ ->
       let () = Dream.add_flash_message req "Error" "post param error" in
@@ -27,43 +23,46 @@ let update_handler req =
 let set_username req =
   match%lwt Dream.form req with
   | `Ok [ ("username", username) ] ->
+      let username = String.trim username in
       let resp = Dream.response ~status:`See_Other "" in
-      Dream.set_cookie resp req "username" username;
+      if String.length username = 0 then Dream.drop_cookie resp req "username"
+      else Dream.set_cookie resp req "username" username;
       Dream.set_header resp "Location" "/";
       Lwt.return resp
-  | _ -> Dream.json "err"
+  | _ ->
+      Dream.add_flash_message req "Error" "Invalid username";
+      Dream.redirect req "/"
+
+let index_handler req =
+  match Dream.cookie req "username" with
+  | Some username ->
+      let username = String.trim username in
+      if String.length username = 0 then
+        Lib.Page.index_no_name req |> Dream.html
+      else
+        let%lwt judges = Dream.sql req (Lib.Db.list_judges username) in
+        Lib.Page.index req judges username |> Dream.html
+  | None -> Lib.Page.index_no_name req |> Dream.html
+
+let img_handler req =
+  let id = Dream.param req "id" in
+  let username = Option.value (Dream.cookie req "username") ~default:"" in
+  let%lwt file = Dream.sql req (Lib.Db.find_file (int_of_string id)) in
+  match file with
+  | None -> Dream.redirect req "/"
+  | Some file -> Dream.html (Lib.Page_img.index req file username)
 
 let () =
   Dream.run ~interface:"0.0.0.0"
   @@ Dream.set_secret (Sys.getenv "DREAM_SECRET")
-  @@ Dream.sql_pool "sqlite3:db.sqlite"
+  @@ Dream.sql_pool "sqlite3:db/db.sqlite"
   @@ Dream.logger @@ Dream.memory_sessions @@ Dream.flash
   @@ Dream.router
        [
-         ( Dream.get "/comments" @@ fun req ->
-           let%lwt comments = Dream.sql req Lib.Db.list_files in
-           Dream.html (Lib.Page.comment comments) );
-         ( Dream.get "/" @@ fun req ->
-           let username =
-             Option.value (Dream.cookie req "username") ~default:""
-           in
-           let%lwt judges = Dream.sql req (Lib.Db.list_judges username) in
-           Lib.Page.index req judges username |> Dream.html );
-         ( Dream.get "/img/:id" @@ fun req ->
-           let id = Dream.param req "id" in
-           let username =
-             Option.value (Dream.cookie req "username") ~default:""
-           in
-           let%lwt file = Dream.sql req (Lib.Db.find_file (int_of_string id)) in
-           match file with
-           | None -> Dream.redirect req "/"
-           | Some file -> Dream.html (Lib.Page_img.index req file username) );
-         ( Dream.get "/json" @@ fun _ ->
-           Dream.json
-             (let j = List.map Lib.Img.yojson_of_t !image_states in
-              Yojson.Safe.to_string (`List j)) );
-         (Dream.post "/update" @@ fun req -> update_handler req);
-         (Dream.post "/username" @@ fun req -> set_username req);
+         Dream.get "/" @@ index_handler;
+         Dream.get "/img/:id" @@ img_handler;
+         Dream.post "/update" @@ update_handler;
+         Dream.post "/username" @@ set_username;
          Dream.get "/images/**" @@ Dream.static "/data/pentagon/test/gt2/";
          Dream.get "/static/**" @@ Dream.static "static/";
          Dream.get "/favicon.ico" @@ Dream.static "static/";

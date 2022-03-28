@@ -1,5 +1,39 @@
 let id_to_link id = "img/" ^ string_of_int id
 
+let index_no_name req = 
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <script src="/static/tailwind.js"></script>
+      <title>Image List</title>
+    </head>
+    <body class="bg-gray-800 text-gray-100">
+      <div class="container mx-auto px-4">
+        <h1 class="text-2xl font-bold mb-4">Image List</h1>
+        <div class="w-full">
+%         Dream.flash_messages req |> List.iter (fun (category , text) ->
+            <p><%s category %>: <%s text %></p><% ); %>
+          <div class="">
+            <form method="POST" action="/username">
+              <%s! Dream.csrf_tag req %>
+              <label>UserName:
+                <input type="text"
+                  name="username"
+                  value=""
+                  required
+                  class="mx-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                > 
+              </label>
+              <button class="button rounded bg-blue-600 text-gray-200 px-1 py-2">Set</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+
+
 let index request judges username =
   <html>
     <head>
@@ -18,11 +52,14 @@ let index request judges username =
             <form method="POST" action="/username">
               <%s! Dream.csrf_tag request %>
               <label>UserName:
-              <span class="mx-2 text-black">
-                <input type="text" name="username" value=<%s username %>>
-              </span>
+                <input type="text"
+                  name="username"
+                  value=<%s username %>
+                  required
+                  class="mx-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                > 
               </label>
-              <button class="button rounded bg-blue-600 text-gray-200 p-1">Set</button>
+              <button class="button rounded bg-blue-600 text-gray-200 px-2 py-1">Set</button>
             </form>
           </div>
           <table class="w-full table-auto border-collapse">
@@ -50,13 +87,4 @@ let index request judges username =
         </div>
       </div>
     </body>
-  </html>
-
-
-let comment comments =
-  <html>
-  <body>
-%    comments |> List.iter (fun (_id, comment) ->
-        <p><%s comment %></p><% ); %>
-  </body>
   </html>
