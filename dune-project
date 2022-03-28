@@ -25,8 +25,6 @@
    dream
    caqti-driver-sqlite3
    ppx_yojson_conv
-   js_of_ocaml
-   js_of_ocaml-ppx
    (ssl (= 0.5.9)))
  (tags
   (topics "to describe" your project)))

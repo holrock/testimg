@@ -1,5 +1,5 @@
 (executables
  (public_names main init)
  (names main init)
- (libraries lib dream tyxml)
+ (libraries lib dream)
  (preprocess (pps lwt_ppx)))
